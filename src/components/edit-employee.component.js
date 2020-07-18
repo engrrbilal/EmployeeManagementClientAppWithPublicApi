@@ -14,7 +14,7 @@ const EditEmployee = (props) => {
         async function fetchData() {
             return employees.getWithId(props.match.params.id).then(res => {
                 console.log("res edit", res)
-                if(res.data){
+                if (res.data) {
                     setName(res.data.name)
                     setAge(res.data.age)
                     setSalary(res.data.salary)
@@ -28,11 +28,10 @@ const EditEmployee = (props) => {
         employees.deleteWithId(props.match.params.id)
             .then(res => {
                 console.log(res.data);
-                if (res) {
-                    alert("Employee has been deleted successfully!")
-                    this.props.history.push('/')
+                if (res.status != "failed") {
+                    alert("Employee has been deleteds!" + res.message? res.message:"");
                 } else {
-                    alert("Server error while deleting todo");
+                    alert("Server error while deleteing " + res.message? res.message:"");
                 }
             });
     }
@@ -48,21 +47,25 @@ const EditEmployee = (props) => {
             age: age,
             salary: salary
         }
-        console.log("editEmployee : ", editEmployee)
-        employees.update(props.match.params.id, editEmployee).then(res => {
-            console.log("res: ", res);
-            setName('')
-            setSalary('')
-            setAge('')
-            if (res) {
-                setIsSubmitting(false)
-                alert("Employee has been updated!");
-                props.history.push('/')
-            } else {
-                setIsSubmitting(false)
-                alert("Server error while updating");
-            }
-        })
+        if (!editEmployee.name || !editEmployee.age || !editEmployee.salary) {
+            alert("Some of required fields are missing !")
+        } else {
+            console.log("editEmployee : ", editEmployee)
+            employees.update(props.match.params.id, editEmployee).then(res => {
+                console.log("res: ", res);
+                setName('')
+                setSalary('')
+                setAge('')
+                if (res.status != "failed") {
+                    setIsSubmitting(false)
+                    alert("Employee has been updated!" + res.message? res.message:"");
+                    props.history.push('/')
+                } else {
+                    setIsSubmitting(false)
+                    alert("Server error while updating"+ res.message? res.message:"");
+                }
+            })
+        }
     }
 
     return (
@@ -82,6 +85,7 @@ const EditEmployee = (props) => {
                     <input type="text"
                         className="form-control"
                         value={age}
+                        type="number"
                         onChange={(e) => setAge(e.target.value)}
                     />
                 </div>
@@ -89,6 +93,7 @@ const EditEmployee = (props) => {
                     <label>Employee Salary: </label>
                     <input type="text"
                         className="form-control"
+                        type="number"
                         value={salary}
                         onChange={(e) => setSalary(e.target.value)}
                     />

@@ -18,21 +18,25 @@ const AddEmployee = (props) => {
             age: age,
             salary: salary
         }
-        console.log("newEmployee : ", newEmployee)
-        employees.add(newEmployee).then(res => {
-            console.log("res: ", res);
-            setName('')
-            setSalary('')
-            setAge('')
-            if (res) {
-                setIsSubmitting(false)
-                alert("Employee has been added successfully!");
-                this.props.history.push('/')
-            } else {
-                setIsSubmitting(false)
-                alert("Server error while adding todo");
-            }
-        })
+        if (!newEmployee.name || !newEmployee.age || !newEmployee.salary) {
+            alert("Some of required fields are missing !")
+        } else {
+            console.log("newEmployee : ", newEmployee)
+            employees.add(newEmployee).then(res => {
+                console.log("res: ", res);
+                setName('')
+                setSalary('')
+                setAge('')
+                if (res.status != "failed") {
+                    setIsSubmitting(false)
+                    alert("Employee has been added successfully!"+ res.message? res.message:"");
+                    this.props.history.push('/')
+                } else {
+                    setIsSubmitting(false)
+                    alert("Server error while adding todo"+ res.message? res.message:"");
+                }
+            })
+        }
     }
 
     return (
@@ -52,6 +56,7 @@ const AddEmployee = (props) => {
                     <input type="text"
                         className="form-control"
                         value={age}
+                        type="number"
                         onChange={(e) => setAge(e.target.value)}
                     />
                 </div>
@@ -60,6 +65,7 @@ const AddEmployee = (props) => {
                     <input type="text"
                         className="form-control"
                         value={salary}
+                        type="number"
                         onChange={(e) => setSalary(e.target.value)}
                     />
                 </div>

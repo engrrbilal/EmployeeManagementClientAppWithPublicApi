@@ -3,9 +3,14 @@ import { Link } from 'react-router-dom';
 import * as employeesApi from '../apis/employess'
 
 const deleteWithId = (id) => {
-    console.log("#id : ", id)
+    // console.log("#id : ", id)
     employeesApi.deleteWithId(id).then((res) => {
         console.log("#res : ", res)
+        if (res.status != "failed") {
+            alert("Employee has been deleteds!" + res.message? res.message:"");
+        } else {
+            alert("Server error while deleteing " + res.message? res.message:"");
+        }
     })
 }
 const Employee = props => (
